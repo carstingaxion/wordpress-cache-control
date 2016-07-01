@@ -122,21 +122,21 @@ function select_directive() {
 
     if ( is_feed() ) {
         return build_directive_from_option( 'feeds' );
-    } else if ( is_front_page() && !is_paged() ) {
+    } elseif ( is_front_page() && !is_paged() ) {
         return build_directive_from_option( 'front_page' );
-    } else if ( is_single() ) {
+    } elseif ( is_single() ) {
         return build_directive_from_option( 'singles' );
-    } else if ( is_page() ) {
+    } elseif ( is_page() ) {
         return build_directive_from_option( 'pages' );
-    } else if ( is_home() ) {
+    } elseif ( is_home() ) {
         return build_directive_from_option( 'home' );
-    } else if ( is_category() ) {
+    } elseif ( is_category() ) {
         return build_directive_from_option( 'categories' );
-    } else if ( is_tag() ) {
+    } elseif ( is_tag() ) {
         return build_directive_from_option( 'tags' );
-    } else if ( is_author() ) {
+    } elseif ( is_author() ) {
         return build_directive_from_option( 'auhtors' );
-    } else if ( is_date() ) {
+    } elseif ( is_date() ) {
         if (   ( is_year()  && strcmp(get_the_time('Y'), date('Y'))     < 0 )
             || ( is_month() && strcmp(get_the_time('Y-m'), date('Y-m')) < 0 )
             || ( ( is_day() || is_time() ) && strcmp(get_the_time('Y-m-d'), date('Y-m-d')) < 0 ) ) {
