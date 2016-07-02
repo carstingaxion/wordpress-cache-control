@@ -93,7 +93,7 @@ $cache_control_options = array(
         's_maxage' => 300            //          5 min
 )   );
 
-function stale_factorer( $factor, $max_age ) {
+function cache_control_stale_factorer( $factor, $max_age ) {
     if ( is_paged() && is_int( $factor ) && $factor > 0 ) {
       $multiplier = get_query_var( 'paged' ) - 1;
       if ( $multiplier > 0 ) {
@@ -107,7 +107,7 @@ function stale_factorer( $factor, $max_age ) {
     return 0;
 }
 
-function is_future_now_maxtime( $max_time_future ) {
+function cache_control_is_future_now_maxtime( $max_time_future ) {
     // trusting the database to cache this query
     $future_post = new WP_Query( array( 'post_status' => 'future',
                                         'posts_per_page' => 1,
@@ -131,7 +131,7 @@ function is_future_now_maxtime( $max_time_future ) {
     return $max_time_future;
 }
 
-function build_directive_header( $max_age, $s_maxage ) {
+function cache_control_build_directive_header( $max_age, $s_maxage ) {
     $directive = "";
     if ( !empty( $max_age ) && is_int( $max_age ) && $max_age > 0)
         $directive = "max-age=$max_age";
@@ -142,13 +142,14 @@ function build_directive_header( $max_age, $s_maxage ) {
 
         $directive = "$directive, s-maxage=$s_maxage";
     }
+
     if ( $directive != "" )
         return $directive;
 
     return "no-cache, no-store, must-revalidate";
 }
 
-function build_directive_from_option( $option_name ) {
+function cache_control_build_directive_from_option( $option_name ) {
     global $cache_control_options;
 
     $option = $cache_control_options[$option_name];
@@ -162,64 +163,64 @@ function build_directive_from_option( $option_name ) {
          $option_name != 'pages'      &&
          $option_name != 'singles'    &&
          $option_name != 'notfound'  ) {
-        $max_age = is_future_now_maxtime( $max_age );
-        $s_maxage = is_future_now_maxtime( $s_maxage );
+        $max_age = cache_control_is_future_now_maxtime( $max_age );
+        $s_maxage = cache_control_is_future_now_maxtime( $s_maxage );
     }
 
     if ( is_paged() && isset( $option['paged'] ) ) {
         $page_factor = intval( get_option( 'cache_control_' . $option['id'] . '_paged', $option['paged'] ) );
-        $max_age  += stale_factorer( $page_factor, $max_age  );
-        $s_maxage += stale_factorer( $page_factor, $s_maxage );
+        $max_age  += cache_control_stale_factorer( $page_factor, $max_age  );
+        $s_maxage += cache_control_stale_factorer( $page_factor, $s_maxage );
     }
 
-    return build_directive_header( $max_age,  $s_maxage );
+    return cache_control_build_directive_header( $max_age,  $s_maxage );
 }
 
-function select_directive() {
+function cache_control_select_directive() {
     if ( is_preview() || is_user_logged_in() || is_trackback() || is_admin() )
-        return build_directive_header( false, false );
+        return cache_control_build_directive_header( false, false );
     elseif ( is_feed() )
-        return build_directive_from_option( 'feeds' );
+        return cache_control_build_directive_from_option( 'feeds' );
     elseif ( is_front_page() && !is_paged() )
-        return build_directive_from_option( 'front_page' );
+        return cache_control_build_directive_from_option( 'front_page' );
     elseif ( is_single() )
-        return build_directive_from_option( 'singles' );
+        return cache_control_build_directive_from_option( 'singles' );
     elseif ( is_page() )
-        return build_directive_from_option( 'pages' );
+        return cache_control_build_directive_from_option( 'pages' );
     elseif ( is_home() )
-        return build_directive_from_option( 'home' );
+        return cache_control_build_directive_from_option( 'home' );
     elseif ( is_category() )
-        return build_directive_from_option( 'categories' );
+        return cache_control_build_directive_from_option( 'categories' );
     elseif ( is_tag() )
-        return build_directive_from_option( 'tags' );
+        return cache_control_build_directive_from_option( 'tags' );
     elseif ( is_author() )
-        return build_directive_from_option( 'auhtors' );
+        return cache_control_build_directive_from_option( 'auhtors' );
     elseif ( is_attachment() )
-        return build_directive_from_option( 'attachment' );
+        return cache_control_build_directive_from_option( 'attachment' );
     elseif ( is_search() )
-        return build_directive_from_option( 'search' );
+        return cache_control_build_directive_from_option( 'search' );
     elseif ( is_404() )
-        return build_directive_from_option( 'notfound' );
+        return cache_control_build_directive_from_option( 'notfound' );
     elseif ( is_date() ) {
         if ( ( is_year() && strcmp(get_the_time('Y'), date('Y')) < 0 ) ||
              ( is_month() && strcmp(get_the_time('Y-m'), date('Y-m')) < 0 ) ||
              ( ( is_day() || is_time() ) && strcmp(get_the_time('Y-m-d'), date('Y-m-d')) < 0 ) ) {
-            return build_directive_from_option( 'dates' );
+            return cache_control_build_directive_from_option( 'dates' );
         }
         else
-            return build_directive_from_option( 'home' );
+            return cache_control_build_directive_from_option( 'home' );
     }
 
-    return build_directive_header( false, false );
+    return cache_control_build_directive_header( false, false );
 }
 
-function send_http_header( $directives ) {
+function cache_control_send_http_header( $directives ) {
     if ( !empty( $directives ) )
         header ( "Cache-Control: $directives" );
 }
 
 function cache_control_send_headers() {
-    send_http_header( select_directive() );
+    cache_control_send_http_header( cache_control_select_directive() );
 }
 
 add_action( 'template_redirect', 'cache_control_send_headers' );
