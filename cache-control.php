@@ -98,7 +98,7 @@ function stale_factorer( $factor, $max_age ) {
       $multiplier = get_query_var( 'paged' ) - 1;
       if ( $multiplier > 0 ) {
           $factored_max_age = $factor * $multiplier;
-          if ( $factored_max_age >= ( $max_age * 10 ) );
+          if ( $factored_max_age >= ( $max_age * 10 ) )
               return $max_age * 10;
 
           return $factored_max_age;
