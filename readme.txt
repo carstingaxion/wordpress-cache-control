@@ -29,7 +29,7 @@ Optionally, also setup [mod_cache](https://httpd.apache.org/docs/current/mod/mod
 
 = What are Cache-Control headers and how do I use them? =
 
-Please refer to RFC 2616 Section 13. If you’re unfamiliar with this header, you’ll want to disable this plugin until you’ve read up on caching in general. Apache’s [caching guide](http://httpd.apache.org/docs/current/caching.html) is a great resource to get better acquainted with caching. This plugin should be used with great care as it breaks assumptions set by WordPress core and most plugin authors that every page will be regenerated for every request.
+Please refer to RFC 2616 Section 13. If you’re unfamiliar with this header, you’ll want to disable this plugin until you’ve read up on caching in general. Apache’s [caching guide](https://httpd.apache.org/docs/current/caching.html) is a great resource to get better acquainted with caching. This plugin should be used with great care as it breaks assumptions set by WordPress core and most plugin authors that every page will be regenerated for every request.
 
 = How do I test my new HTTP headers? = 
 
@@ -57,7 +57,11 @@ Any plugin that require dynamic content will be negatively affected. For example
 
 == Changelog ==
 
-= 1.0. =
+= HEAD =
+
+Pagination factor limited to an upper value of ten times the base cache time.
+
+= 1.0 =
 
 Added individual control for search result pages, 404 Not Found responses, and attachment pages.
 

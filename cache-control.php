@@ -93,9 +93,12 @@ $cache_control_options = array(
         's_maxage' => 300            //          5 min
 )   );
 
-function stale_factorer( $factor ) {
+function stale_factorer( $factor, $max_age ) {
     if ( is_paged() && is_int( $factor ) && $factor > 0 ) {
-        return $factor * (get_query_var('paged') - 1);
+        $factored_max_age = $factor * ( get_query_var( 'paged' ) - 1 );
+        if ( $factored_max_age >= ( $max_age * 10 ) );
+            return $max_age * 5;
+        return $factored_max_age;
     }
     return 0;
 }
@@ -122,13 +125,14 @@ function build_directive_from_option( $id ) {
 
     $option = $cache_control_options[$id];
 
-    $page_factor = 0;
+    $max_age  = get_option( 'cache_control_' . $option['id'] . '_max_age',  $option['max_age']  );
+    $s_maxage = get_option( 'cache_control_' . $option['id'] . '_s_maxage', $option['s_maxage'] );
+
     if ( isset( $option['paged'] ) ) {
         $page_factor = get_option( 'cache_control_' . $option['id'] . '_paged', $option['paged'] );
+        $max_age  += stale_factorer( $page_factor, $max_age  );
+        $s_maxage += stale_factorer( $page_factor, $s_maxage );
     }
-
-    $max_age  = get_option( 'cache_control_' . $option['id'] . '_max_age',  $option['max_age']  ) + stale_factorer($page_factor);
-    $s_maxage = get_option( 'cache_control_' . $option['id'] . '_s_maxage', $option['s_maxage'] ) + stale_factorer($page_factor);
 
     return build_directive_header( $max_age, $s_maxage );
 }
