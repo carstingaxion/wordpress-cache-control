@@ -133,20 +133,20 @@ function is_future_now_maxtime( $max_time_future ) {
 
 function build_directive_header( $max_age, $s_maxage ) {
     $directive = "";
-    if ( !empty( $max_age ) && is_int( $max_age ) && $max_age > 0) {
+    if ( !empty( $max_age ) && is_int( $max_age ) && $max_age > 0)
         $directive = "max-age=$max_age";
-    }
+
     if ( !empty( $s_maxage ) && is_int( $s_maxage ) && $s_maxage > 0 && $s_maxage != $max_age ) {
-        if ( !$directive != "" ) {
+        if ( !$directive != "" )
             $directive = "public";
-        }
+
         $directive = "$directive, s-maxage=$s_maxage";
     }
-    if ( $directive != "" ) {
+    if ( $directive != "" )
         return $directive;
-    } else {
-        return "no-cache, no-store, must-revalidate";
-}   }
+
+    return "no-cache, no-store, must-revalidate";
+}
 
 function build_directive_from_option( $option_name ) {
     global $cache_control_options;
@@ -176,46 +176,47 @@ function build_directive_from_option( $option_name ) {
 }
 
 function select_directive() {
-    if ( is_preview() || is_user_logged_in() || is_trackback() || is_admin() ) {
+    if ( is_preview() || is_user_logged_in() || is_trackback() || is_admin() )
         return build_directive_header( false, false );
-    } elseif ( is_feed() ) {
+    elseif ( is_feed() )
         return build_directive_from_option( 'feeds' );
-    } elseif ( is_front_page() && !is_paged() ) {
+    elseif ( is_front_page() && !is_paged() )
         return build_directive_from_option( 'front_page' );
-    } elseif ( is_single() ) {
+    elseif ( is_single() )
         return build_directive_from_option( 'singles' );
-    } elseif ( is_page() ) {
+    elseif ( is_page() )
         return build_directive_from_option( 'pages' );
-    } elseif ( is_home() ) {
+    elseif ( is_home() )
         return build_directive_from_option( 'home' );
-    } elseif ( is_category() ) {
+    elseif ( is_category() )
         return build_directive_from_option( 'categories' );
-    } elseif ( is_tag() ) {
+    elseif ( is_tag() )
         return build_directive_from_option( 'tags' );
-    } elseif ( is_author() ) {
+    elseif ( is_author() )
         return build_directive_from_option( 'auhtors' );
-    } elseif ( is_attachment() ) {
+    elseif ( is_attachment() )
         return build_directive_from_option( 'attachment' );
-    } elseif ( is_search() ) {
+    elseif ( is_search() )
         return build_directive_from_option( 'search' );
-    } elseif ( is_404() ) {
+    elseif ( is_404() )
         return build_directive_from_option( 'notfound' );
-    } elseif ( is_date() ) {
-        if (   ( is_year()  && strcmp(get_the_time('Y'), date('Y'))     < 0 )
-            || ( is_month() && strcmp(get_the_time('Y-m'), date('Y-m')) < 0 )
-            || ( ( is_day() || is_time() ) && strcmp(get_the_time('Y-m-d'), date('Y-m-d')) < 0 ) ) {
+    elseif ( is_date() ) {
+        if ( ( is_year() && strcmp(get_the_time('Y'), date('Y')) < 0 ) ||
+             ( is_month() && strcmp(get_the_time('Y-m'), date('Y-m')) < 0 ) ||
+             ( ( is_day() || is_time() ) && strcmp(get_the_time('Y-m-d'), date('Y-m-d')) < 0 ) ) {
             return build_directive_from_option( 'dates' );
-        } else {
+        }
+        else
             return build_directive_from_option( 'home' );
-    }   }
+    }
 
     return build_directive_header( false, false );
 }
 
 function send_http_header( $directives ) {
-    if ( !empty( $directives ) ) {
+    if ( !empty( $directives ) )
         header ( "Cache-Control: $directives" );
-}   }
+}
 
 function cache_control_send_headers() {
     send_http_header( select_directive() );

@@ -31,9 +31,9 @@ function cache_control_install() {
     foreach ($cache_control_options as $key => $option) {
         add_option( 'cache_control_' . $option['id'] . '_max_age', $option['max_age'] );
         add_option( 'cache_control_' . $option['id'] . '_s_maxage', $option['s_maxage'] );
-        if ( isset( $option['paged'] ) ) {
+        if ( isset( $option['paged'] ) )
             add_option( 'cache_control_' . $option['id'] . '_paged', $option['paged'] );
-}   }   }
+}   }
 
 register_activation_hook( __FILE__, 'cache_control_install' );
 
@@ -42,9 +42,9 @@ function cache_control_uninstall() {
     foreach ($cache_control_options as $key => $option) {
         delete_option( 'cache_control_' . $option['id'] . '_max_age' );
         delete_option( 'cache_control_' . $option['id'] . '_s_maxage' );
-        if ( isset( $option['paged'] ) ) {
+        if ( isset( $option['paged'] ) )
             delete_option( 'cache_control_' . $option['id'] . '_paged' );
-}   }   }
+}   }
 
 register_uninstall_hook( __FILE__, 'cache_control_uninstall' );
 
@@ -62,9 +62,9 @@ function cache_control_options_page() {
                                         'cache_control_' . $option['id'] . '_paged'
                   );
                   foreach ( $option_keys as $key => $option_key ) {
-                      if ( isset( $_POST[$option_key] ) && is_int( intval( $_POST[$option_key] ) ) ) {
+                      if ( isset( $_POST[$option_key] ) && is_int( intval( $_POST[$option_key] ) ) )
                         update_option( $option_key, intval( $_POST[$option_key] ) );
-              }   }   }   } ?>
+              }   }   } ?>
           <div id="poststuff">
                <div id="post-body">
                     <div id="post-body-content">
