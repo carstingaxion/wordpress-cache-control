@@ -15,6 +15,8 @@ Good caching policies is one of performance’s best friend, and it can be your 
 
 This is not a caching plugin in itself, but will enable you to leverage existing standard compliant caching systems better. You can set different policies for different kinds of pages to suite your website’s needs. Allows you to set different policies for shared and private caches. The plugin sets some sensible defaults for a medium traffic level blog that is updated every week or so.
 
+You can safely set long `Cache-Control` times as the `max-age` values is lowered when a scheduled post is about to be published.
+
 Private pages (logged in users, the admin interface, etc.) will not be cached.
 
 == Installation ==
@@ -59,11 +61,12 @@ Any plugin that require dynamic content will be negatively affected. For example
 
 = HEAD =
 
-Pagination factor limited to an upper value of ten times the base cache time.
+* Reduce caching max-age when a scheduled post is imminent.
+* Pagination factor limited to an upper value of ten times the base cache time.
 
 = 1.0 =
 
-Added individual control for search result pages, 404 Not Found responses, and attachment pages.
+* Added individual control for search result pages, 404 Not Found responses, and attachment pages.
 
 = 0.9 =
 

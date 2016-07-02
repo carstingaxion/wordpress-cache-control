@@ -95,12 +95,40 @@ $cache_control_options = array(
 
 function stale_factorer( $factor, $max_age ) {
     if ( is_paged() && is_int( $factor ) && $factor > 0 ) {
-        $factored_max_age = $factor * ( get_query_var( 'paged' ) - 1 );
-        if ( $factored_max_age >= ( $max_age * 10 ) );
-            return $max_age * 10;
-        return $factored_max_age;
-    }
+      $multiplier = get_query_var( 'paged' ) - 1;
+      if ( $multiplier > 0 ) {
+          $factored_max_age = $factor * $multiplier;
+          if ( $factored_max_age >= ( $max_age * 10 ) );
+              return $max_age * 10;
+
+          return $factored_max_age;
+    }  }
+
     return 0;
+}
+
+function is_future_now_maxtime( $max_time_future ) {
+    // trusting the database to cache this query
+    $future_post = new WP_Query( array( 'post_status' => 'future',
+                                        'posts_per_page' => 1,
+                                        'orderby' => 'date',
+                                        'order' => 'ASC'
+    ) );
+
+    if ( $future_post->have_posts() ) {
+        $local_nowtime = intval( current_time( 'timestamp', 0 ) );
+
+        while ( $future_post->have_posts() ) {
+            $future_post->the_post();
+            $local_futuretime = get_the_time( 'U' );
+            if ( ( $local_nowtime + $max_time_future ) > $local_futuretime )
+                $max_time_future = $local_futuretime - $local_nowtime + rand( 2, 32 );
+        }
+
+        wp_reset_postdata();
+    }
+
+    return $max_time_future;
 }
 
 function build_directive_header( $max_age, $s_maxage ) {
@@ -120,21 +148,31 @@ function build_directive_header( $max_age, $s_maxage ) {
         return "no-cache, no-store, must-revalidate";
 }   }
 
-function build_directive_from_option( $id ) {
+function build_directive_from_option( $option_name ) {
     global $cache_control_options;
 
-    $option = $cache_control_options[$id];
+    $option = $cache_control_options[$option_name];
 
-    $max_age  = get_option( 'cache_control_' . $option['id'] . '_max_age',  $option['max_age']  );
-    $s_maxage = get_option( 'cache_control_' . $option['id'] . '_s_maxage', $option['s_maxage'] );
+    $max_age  = intval( get_option( 'cache_control_' . $option['id'] . '_max_age',  $option['max_age']  ) );
+    $s_maxage = intval( get_option( 'cache_control_' . $option['id'] . '_s_maxage', $option['s_maxage'] ) );
+        
+    // dynamically shorten caching time when a scheduled post is imminent
+    if ( $option_name != 'attachment' &&
+         $option_name != 'dates'      &&
+         $option_name != 'pages'      &&
+         $option_name != 'singles'    &&
+         $option_name != 'notfound'  ) {
+        $max_age = is_future_now_maxtime( $max_age );
+        $s_maxage = is_future_now_maxtime( $s_maxage );
+    }
 
-    if ( isset( $option['paged'] ) ) {
-        $page_factor = get_option( 'cache_control_' . $option['id'] . '_paged', $option['paged'] );
+    if ( is_paged() && isset( $option['paged'] ) ) {
+        $page_factor = intval( get_option( 'cache_control_' . $option['id'] . '_paged', $option['paged'] ) );
         $max_age  += stale_factorer( $page_factor, $max_age  );
         $s_maxage += stale_factorer( $page_factor, $s_maxage );
     }
 
-    return build_directive_header( $max_age, $s_maxage );
+    return build_directive_header( $max_age,  $s_maxage );
 }
 
 function select_directive() {
