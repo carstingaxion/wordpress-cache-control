@@ -5,14 +5,6 @@ if ( !defined('ABSPATH') || !is_admin() ) {
     exit(   'HTTP/1.1 403 Forbidden' );
 }
 
-
-
-function cache_control_add_action_links( $links ) {
-     $mylinks = array('<a href="' . admin_url( 'options-general.php?page=cache_control' ) . '">Settings</a>');
-    return array_merge( $links, $mylinks );
-}
-//add_filter( 'plugin_action_links', 'cache_control_add_action_links', 10, 2 );
-// TODO: Overwrites every other plugin’s links too!
 function cache_control_add_options_submenu_page() {
     add_submenu_page(
         'options-general.php',        // append to Settings sub-menu
