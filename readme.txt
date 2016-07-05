@@ -3,7 +3,7 @@ Contributors: geekysoft
 Tags: caching, performance, cache-control, http
 Requires at least: 4.4.1
 Tested up to: 4.5.3
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -43,7 +43,7 @@ No, but it tells caching reverse proxies like Apache’s mod_cache, Varnish, Squ
 
 = What about non-public pages like the admin interface? Preview pages? Logged in users? =
 
-These pages are always set as non-cachable. Whether caches respect this is up to their configuration. By default, this shouldn’t be an issue.
+These pages are always set as non-cacheable. Whether caches respect this is up to their configuration. By default, this shouldn’t be an issue.
 
 = Can I control the cacheability of Atom and RSS feeds? =
 
@@ -59,7 +59,11 @@ Any plugin that require dynamic content will be negatively affected. For example
 
 == Changelog ==
 
-= HEAD =
+= 1.2 =
+
+* Resolved a problem that made author pages uncacheable.
+
+= 1.1 =
 
 * Reduce caching max-age when a scheduled post is imminent.
 * Pagination factor limited to an upper value of ten times the base cache time.
