@@ -2,7 +2,7 @@
 Contributors: geekysoft
 Tags: caching, performance, cache-control, http
 Requires at least: 4.4.1
-Tested up to: 4.5.3
+Tested up to: 4.6.1
 Stable tag: 1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
