@@ -196,7 +196,8 @@ function cache_control_build_directive_from_option( $option_name ) {
             $date_mod = max( array( $date_mod, last_com ) );
         }
 
-        $months_stale = $date_now->diff( $date_mod )->m;
+        $date_diff = $date_now->diff( $date_mod );
+        $months_stale = $date_diff->m + ( $date_diff->y * 12 );
 
         if ( $months_stale > 0 ) {
             $max_age  = intval( $max_age  * ( ( $months_stale + 12 ) / 12 ) );
