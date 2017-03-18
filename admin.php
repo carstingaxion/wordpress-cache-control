@@ -36,6 +36,8 @@ function cache_control_uninstall() {
         delete_option( 'cache_control_' . $option['id'] . '_s_maxage' );
         if ( isset( $option['paged'] ) )
             delete_option( 'cache_control_' . $option['id'] . '_paged' );
+        if ( isset( $option['_mmulti'] ) )
+            delete_option( 'cache_control_' . $option['id'] . '_mmulti' );
 }   }
 
 register_uninstall_hook( __FILE__, 'cache_control_uninstall' );
@@ -51,25 +53,30 @@ function cache_control_options_page() {
               foreach ($cache_control_options as $key => $option) {
                   $option_keys = array( 'cache_control_' . $option['id'] . '_max_age',
                                         'cache_control_' . $option['id'] . '_s_maxage',
-                                        'cache_control_' . $option['id'] . '_paged'
+                                        'cache_control_' . $option['id'] . '_paged',
+                                        'cache_control_' . $option['id'] . '_mmulti'
                   );
                   foreach ( $option_keys as $key => $option_key ) {
                       if ( isset( $_POST[$option_key] ) && is_int( intval( $_POST[$option_key] ) ) )
-                        update_option( $option_key, intval( $_POST[$option_key] ) );
+                          update_option( $option_key, intval( $_POST[$option_key] ) );
+                      elseif ( !isset( $_POST[$option_key] ) && get_option( $option_key, FALSE ) !== FALSE )  // checkbox
+                          update_option( $option_key, intval( 0 ) );
               }   }   } ?>
           <div id="poststuff">
                <div id="post-body">
                     <div id="post-body-content">
-                         <p>You should uninstall this plugin if you’re unfamiliar with the HTTP Cache-Control header! Pages may not be served directly from your WordPress instanece, but rather from client and other caching proxies. Acceptable freshness will vary from website to website so do review the below settings carefully.</p>
+                         <p>You should <strong>uninstall this plugin if you’re unfamiliar with the HTTP Cache-Control header!</strong> Pages may not be served directly from your WordPress instanece, but rather from client and other caching proxies. Acceptable freshness will vary from website to website so do review the below settings carefully.</p>
+                         <p>All values are <strong>in seconds</strong>.</p>
                          <form method="post" action="options-general.php?page=cache_control">
                               <?php settings_fields( 'wporg_options' ); ?>
                               <?php $options = get_option( 'wporg_hide_meta' ); ?>
                               <table class="form-table">
                                     <tr>
                                         <th scope="column">Name</th>
-                                        <th scope="column">Max-Age</th>
-                                        <th scope="column">Shared Max-Age</th>
-                                        <th scope="column">Pagination</th>
+                                        <th scope="column">Max-Age<br/>(privater cache)</th>
+                                        <th scope="column">S-MaxAge<br/>(shared/proxy cache)</th>
+                                        <th scope="column">Increase per page</th>
+                                        <th scope="column">Stale age multiplier</th>
                                     </tr>
                                     <?php foreach ($cache_control_options as $key => $option) { ?>
                                     <tr>
@@ -79,6 +86,9 @@ function cache_control_options_page() {
                                         <?php if ( isset( $option['paged'] ) ) { ?>
                                         <td><input type="number" name="cache_control_<?php print $option['id']; ?>_paged" id="cache_control_<?php print $option['id']; ?>_paged" value="<?php print get_option( 'cache_control_' . $option['id'] . '_paged', $option['paged'] ) ?>"></td>
                                         <?php } else { ?><td></td><?php } ?>
+                                        <?php if ( isset( $option['mmulti'] ) ) { ?>
+                                        <td><label><input type="checkbox" name="cache_control_<?php print $option['id']; ?>_mmulti" id="cache_control_<?php print $option['id']; ?>_mmulti" value="1" <?php if(get_option( 'cache_control_' . $option['id'] . '_mmulti', $option['mmulti'] ) == 1) print ' checked="checked"'; ?>> Months since last modified or comment (with a factor equal to <em>max-age × years</em>)</label></td>
+                                        <?php } else { ?><td></td><?php } ?>
                                     </tr>
                                     <?php } ?>
                               </table>
@@ -87,8 +97,11 @@ function cache_control_options_page() {
                          </form>
                          <p>Control the freshness communicated in the Cache-Control header on different types of pages. Every value is <strong>in seconds</strong>. <em>Shared Max Age</em> is any reverse cashing or other public proxy servers, and is generally set lower than <em>Max Age</em>. Set the freshness as high as is acceptable for your website! Longer expiration days reduce the load on WordPress as clients can be served stale static copies from reverse caching proxies. <em>Pagination</em> adds this many seconds linearly increasing to older pages (e.g. page four is assigned <em>$max_age or $shared_max_age + ( 4 × $per_page )</em>). This is useful when oler pages don’t have the same freshness requirement as newer pages. Pagination factor is limited to ten times that of the base Max-Age/Shared Max-Age. <em>Dated archives</em> is only used for stale periods (previous years, months, etc.), where as the current period share settings with <em>Main index</em>. Set any field to 0 to disable it. Note that proxies will use <em>Max Age</em> if <em>Shared Max Age</em> is unset.</p>
                          <p>Example header: <em>Cache-Control: max-age=$max_age, s_maxage=$shared_max_age</em></p>
+                         <p>The <em>Stale age multiplier</em> optionally increases the cache time for for old pages that haven’t been modified or commented on in at least one month. The facotr is equal to <em>$max_age × $years_since_last_mod</em>. This feature works better with the <a href="https://wordpress.org/plugins/minor-edits/"><em>Mintor Edits</em> plugin</a> as this plugin prevents tiny edits from changing the <samp>Last Modified</samp> time.</p>
+                         <p>You can improve client caching and reduce bandwidth usage of syndication feeds by offering <a href="https://ctrl.blog/entry/feed-delta-updates">feed delta updates</a>. The <a href="https://ctrl.blog/entry/wordpress-feed-delta-updates"><em>Feed Delta Updates</em> plugin</a> enables this for your website.</p>
                          <p>The header is only added to dynamic pages generated by WordPress. You should also set Cache-Control headers manually in your webserver configuration for images, scripts, stylesheets, and other static resources.</p>
                          <p>If you’re <em>scheduling posts in the future,</em> you can safely set long cache times as dynamic pages (indexes, feeds, taxonemies, searches, others.) will dynamically reduce their caching times to a few seonds after a scheduled post is published.</p>
+                         <p>Check out <a href="https://ctrl.blog/topic/caching">Ca-ching!</a> to read up on applied HTTP caching.</p>
                     </div>
                </div>
           </div>

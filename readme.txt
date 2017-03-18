@@ -1,9 +1,9 @@
-=== Plugin Name ===
+=== Cache-Control ===
 Contributors: geekysoft
 Tags: caching, performance, cache-control, http
 Requires at least: 4.4.1
 Tested up to: 4.7.3
-Stable tag: 1.2
+Stable tag: 2.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -59,6 +59,12 @@ Any plugin that require dynamic content will be negatively affected. For example
 
 == Changelog ==
 
+= 2.0.0 =
+
+* New feature: Enable caching of HTTP 301 Moved Permanently redirects (1 day by default).
+* New feature: Stale posts (no comments and not modified) optionally multiplied by months since last activity (equal to max-age × years).
+* WordPress core bug work-around: Add body message to HTTP redirects (fix for mod_cache).
+
 = 1.2 =
 
 * Resolved a problem that made author pages uncacheable.
@@ -74,4 +80,8 @@ Any plugin that require dynamic content will be negatively affected. For example
 
 = 0.9 =
 
-* Initial public release
+* Initial public release.
+
+= 0.7 =
+
+* Here be dragons.
