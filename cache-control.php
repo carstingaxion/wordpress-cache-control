@@ -106,6 +106,23 @@ $cache_control_options = array(
         's_maxage' => 21600          //       6 hours
 )   );
 
+if ( cache_control_does_woocommerce() ) {
+    $cache_control_options['woocommerce_product'] =
+      array(
+        'id'       => 'woocommerce_product',
+        'name'     => 'WooCommerce products',
+        'max_age'  => 600,           //               10 min
+        's_maxage' => 60             //                1 min
+    );
+    $cache_control_options['woocommerce_category'] =
+      array(
+        'id'       => 'woocommerce_category',
+        'name'     => 'WooCommerce categories',
+        'max_age'  => 600,           //               10 min
+        's_maxage' => 60             //                1 min
+    );
+}
+
 function cache_control_stale_factorer( $factor, $max_age ) {
     if ( is_paged() && is_int( $factor ) && $factor > 0 ) {
       $multiplier = get_query_var( 'paged' ) - 1;
@@ -208,7 +225,23 @@ function cache_control_build_directive_from_option( $option_name ) {
 }
 
 function cache_control_nocacheables() {
-  return ( is_preview() || is_user_logged_in() || is_trackback() || is_admin() );
+    $noncacheable = ( is_preview() ||
+                      is_user_logged_in() ||
+                      is_trackback() ||
+                      is_admin() );
+
+    if ( !$noncacheable && function_exists('is_woocommerce') ) {
+        $noncacheable = ( is_cart() ||
+                          is_checkout() ||
+                          is_account_page() );
+    }
+
+    return $noncacheable;
+}
+
+function cache_control_does_woocommerce() {
+    return ( function_exists('is_woocommerce') ||
+             file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) );
 }
 
 function cache_control_select_directive() {
@@ -244,6 +277,12 @@ function cache_control_select_directive() {
         }
         else
             return cache_control_build_directive_from_option( 'home' );
+    }
+    elseif ( cache_control_does_woocommerce() ) {
+        if ( function_exists('is_product') && is_product() )
+            return cache_control_build_directive_from_option( 'woocommerce_product' );
+        elseif ( function_exists('is_product_category') && is_product_category() )
+            return cache_control_build_directive_from_option( 'woocommerce_category' );
     }
 
     // see also cache_control_handle_redirects()
