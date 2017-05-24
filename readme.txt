@@ -61,12 +61,12 @@ Any plugin that require dynamic content will be negatively affected. For example
 
 = 2.1.1 =
 
-* New feature: New filter hooks for more direct control of the Cache-Control header. See HACKING.
+* New feature: New filter hooks for more direct control of the Cache-Control header. See HACKING. (Thanks to Ross Featherstone.)
 * Resolved an issue where unlocked password protected posts could be cached.
 
 = 2.0.2 =
 
-* Resolved a compatibility issue for non-English locales.
+* Resolved a compatibility issue for non-English locales. 
 
 = 2.0.1 =
 
