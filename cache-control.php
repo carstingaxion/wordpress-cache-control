@@ -225,12 +225,26 @@ function cache_control_build_directive_from_option( $option_name ) {
 }
 
 function cache_control_nocacheables() {
-    $noncacheable = ( is_preview() ||
-                      is_user_logged_in() ||
-                      is_trackback() ||
-                      is_admin() );
+    global $wp_query;
 
-    if ( !$noncacheable && function_exists('is_woocommerce') ) {
+    $noncacheable = ( is_preview()        ||
+                      is_user_logged_in() ||
+                      is_trackback()      ||
+                      is_admin()
+                    );
+
+    // Requires post password, and post has been unlocked.
+    if ( !$noncacheable                             &&
+         isset($wp_query)                           &&
+         isset($wp_query->posts)                    && 
+         count($wp_query->posts) >= 1               &&
+         !empty($wp_query->posts[0]->post_password) &&
+         !post_password_required() ) {
+        $noncacheable = TRUE;
+    }
+
+    // WooCommerce support
+    elseif ( !$noncacheable && function_exists('is_woocommerce') ) {
         $noncacheable = ( is_cart() ||
                           is_checkout() ||
                           is_account_page() );
