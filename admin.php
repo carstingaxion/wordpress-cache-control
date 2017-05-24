@@ -107,4 +107,5 @@ function cache_control_options_page() {
           </div>
      </div>
      <style>.form-table {width: auto;} tr td:nth-of-type(1) input {width: 120px;} tr td:nth-of-type(2) input {width: 100px;} tr td:nth-of-type(3) input {width: 80px;} th[scope="column"]:not(:first-of-type) {padding: 15px 10px; width: auto;}</style>
-<?php } ?>
+<?php }
+
