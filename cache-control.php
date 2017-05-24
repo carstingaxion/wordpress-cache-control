@@ -173,6 +173,8 @@ function cache_control_build_directive_header( $max_age, $s_maxage ) {
         $directive = "$directive, s-maxage=$s_maxage";
     }
 
+    $directive = apply_filters( 'cache_control_cachedirective', $directive );
+
     if ( $directive != "" )
         return $directive;
 
@@ -250,6 +252,8 @@ function cache_control_nocacheables() {
                           is_account_page() );
     }
 
+    $noncacheable = apply_filters( 'cache_control_nocacheables', $noncacheable );
+
     return $noncacheable;
 }
 
@@ -299,9 +303,9 @@ function cache_control_select_directive() {
             return cache_control_build_directive_from_option( 'woocommerce_category' );
     }
 
-    // see also cache_control_handle_redirects()
+    // cache_control_handle_redirects() is handled at an earlier stage
 
-    return cache_control_build_directive_header( false, false );
+    return cache_control_build_directive_header( FALSE, FALSE );
 }
 
 function cache_control_send_http_header( $directives ) {
@@ -324,7 +328,7 @@ add_action( 'template_redirect', 'cache_control_send_headers' );
 function cache_control_handle_redirects( $status, $location = NULL ) {
     if ( cache_control_nocacheables() )
       cache_control_send_http_header(
-        cache_control_build_directive_header( false, false ) );
+        cache_control_build_directive_header( FALSE, FALSE ) );
     elseif ( $status == 301          ||          $status == 308 )
       cache_control_send_http_header(
         cache_control_build_directive_from_option( 'redirect_permanent' ) );
