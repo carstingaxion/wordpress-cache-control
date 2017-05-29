@@ -3,7 +3,7 @@ Contributors: geekysoft
 Tags: caching, performance, cache-control, http
 Requires at least: 4.4.1
 Tested up to: 4.7.4
-Stable tag: 2.0.2
+Stable tag: 2.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -62,7 +62,7 @@ Any plugin that require dynamic content will be negatively affected. For example
 = 2.1.1 =
 
 * New feature: New filter hooks for more direct control of the Cache-Control header. See HACKING. (Thanks to Ross Featherstone.)
-* Resolved an issue where unlocked password protected posts could be cached.
+* Password protected posts are no longer cached after being unlocked.
 
 = 2.0.2 =
 
