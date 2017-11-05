@@ -5,6 +5,27 @@ if ( !defined('ABSPATH') || !is_admin() ) {
     exit(   'HTTP/1.1 403 Forbidden' );
 }
 
+function cache_control_admin_action_links( $links ) {
+    return array_merge(
+        array('settings' => '<a href="' . admin_url( 'options-general.php?page=cache_control' ) . '">' . esc_html__( 'Settings', 'cache-control' ) . '</a>',
+        ),
+        $links );
+}
+add_filter( 'plugin_action_links_' . plugin_basename( 'cache-control/cache-control.php' ),
+            'cache_control_admin_action_links' );
+
+function cache_control_admin_actions( $links, $file ) {
+    if ( plugin_basename( 'cache-control/cache-control.php' ) === $file ) {
+        return array_merge(
+            $links,
+            array(
+                'documentation' => '<a href="https://www.ctrl.blog/projects/wp-cache-control-documentation">Documentation</a>'
+	      ));
+    }
+    return $links;
+}
+add_filter( 'plugin_row_meta', 'cache_control_admin_actions', 10, 2 );
+
 function cache_control_add_options_submenu_page() {
     add_submenu_page(
         'options-general.php',        // append to Settings sub-menu
