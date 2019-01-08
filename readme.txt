@@ -2,8 +2,8 @@
 Contributors: geekysoft
 Tags: caching, performance, cache-control, http
 Requires at least: 4.4.1
-Tested up to: 4.9.4
-Stable tag: 2.2.2
+Tested up to: 5.0.2
+Stable tag: 2.2.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -76,7 +76,7 @@ Any plugin that require dynamic content will be negatively affected. For example
 
 == Changelog ==
 
-= 2.2.2 =
+= 2.2.3 =
 
 * Resolved an issue when calculating the time since the last comment.
 
