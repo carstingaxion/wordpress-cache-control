@@ -15,6 +15,7 @@ if ( !defined('ABSPATH') ) {
     exit(   'HTTP/1.1 403 Forbidden' );
 }
 
+global $cache_control_options;
 $cache_control_options = array(
     'front_page'     => array(
         'id'         => 'front_page',
